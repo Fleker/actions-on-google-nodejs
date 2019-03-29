@@ -16,7 +16,7 @@ curr_hash="$(git rev-parse HEAD)"
 git checkout HEAD~1
 # We are in HEAD-1
 # Run coverage check and get it output as ./coverage/coverage-summary.json
-yarn test
+yarn test > /dev/null
 # File is stored in coverage/coverage-summary.json
 coverage_pct="console.log(require('./coverage/coverage-summary.json').total.functions.pct)"
 prev_coverage=$(node -e $coverage_pct)
@@ -24,12 +24,12 @@ prev_coverage=$(node -e $coverage_pct)
 # Now go to this commit
 git checkout "$curr_hash"
 # Run coverage check and get it output as ./coverage/coverage-summary.json
-yarn test
+yarn test > /dev/null
 # File is stored in coverage/coverage-summary.json
-curr_coverage=$(node -e $coverage_pct)
+coverage_pct_threshold="console.log(require('./coverage/coverage-summary.json').total.functions.pct + 3)"
+curr_coverage=$(node -e $coverage_pct_threshold)
 
-gt="$(echo $prev_coverage'<='$curr_coverage'+3' | bc -l)"
-if [ $gt -ne 1 ]; then
+if [ $prev_coverage -lt $curr_coverage ]; then
   # This change reduces function code coverage.
   # This is not good.
   echo "This change reduces code coverage from ${prev_coverage}% to ${curr_coverage}%"
