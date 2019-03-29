@@ -4,6 +4,9 @@ steps:
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
   id: 'Download Git Presubmit Linter'
 - name: 'ubuntu'
+  args: ['apt-get', 'install', '-y', 'software-properties-common']
+  id: 'AAA'
+- name: 'ubuntu'
   args: ['add-apt-repository', 'ppa:git-core/ppa']
   id: 'Add Git PPA'
 - name: 'ubuntu'
