@@ -1,7 +1,3 @@
-# A bunch of build steps
-# TODO:
-#   [ ] Only run yarn steps if Node.js changes
-#   [ ] Coverage check
 steps:
 # Fetch entire repo
 - name: gcr.io/cloud-builders/git
