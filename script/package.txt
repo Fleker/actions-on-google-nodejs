@@ -1,0 +1,12 @@
+package
+package/dist
+package/dist/[a-z/]*
+package/dist/.*\.d\.ts
+package/dist/.*\.js
+package/dist/.*\.js\.map
+package/src
+package/src/.*\.ts
+package/src/[a-z/]*
+package/LICENSE
+package/README.md
+package/package.json
