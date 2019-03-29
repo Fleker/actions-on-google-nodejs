@@ -26,26 +26,37 @@ steps:
   args: ['-c', './git-presubmit-linter/tools/changelog.sh > changelog.txt']
   id: 'Generate changelog'
 # Yarn
-- name: 'gcr.io/cloud-builders/yarn'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
   args: ['']
   id: 'Install dependencies'
-- name: 'gcr.io/cloud-builders/yarn'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
+  args: ['audit']
+  id: 'Audit'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
   args: ['lint']
   id: 'Lint'
-- name: 'gcr.io/cloud-builders/yarn'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
   args: ['build']
   id: 'Build'
-- name: 'gcr.io/cloud-builders/yarn'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
   args: ['test']
   id: 'Test'
-- name: 'gcr.io/cloud-builders/yarn'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
   args: ['docs']
   id: 'Docgen'
-- name: 'gcr.io/cloud-builders/yarn'
+- name: 'node:8.15.1'
+  entrypoint: 'yarn'
   args: ['package']
   id: 'Generate archive'
 - name: 'ubuntu'
-  args: ['tar', '-tf', '*.tgz', '|', './git-presubmit-linter/tools/filelist.sh', './script/package.txt']
+  entrypoint: 'bash'
+  args: ['-c', 'tar -tf *.tgz | ./git-presubmit-linter/tools/filelist.sh ./script/package.txt']
   id: 'Verify archive contents'
 artifacts:
   objects:
