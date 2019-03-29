@@ -11,16 +11,19 @@ steps:
   id: 'Download Git Presubmit Linter'
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
-  args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh']
+  args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh present']
   id: 'Check git message verb tense'
-- name: 'ubuntu'
-  args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/line-length.sh', '80']
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/line-length.sh 80']
   id: 'Check git message line length'
-- name: 'ubuntu'
-  args: ['git', 'diff', 'HEAD~1', '--pretty=%B', '|', './git-presubmit-linter/rules/trailing-whitespace.sh']
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args: ['-c', 'git diff HEAD~1 --pretty=%B | ./git-presubmit-linter/rules/trailing-whitespace.sh']
   id: 'Check commit no trailing whitespace'
-- name: 'ubuntu'
-  args: ['./git-presubmit-linter/tools/changelog.sh', '>', 'changelog.txt']
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args: ['-c', './git-presubmit-linter/tools/changelog.sh > changelog.txt']
   id: 'Generate changelog'
 # Yarn
 - name: 'gcr.io/cloud-builders/yarn'
