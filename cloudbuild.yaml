@@ -1,17 +1,12 @@
 # A bunch of build steps
 # TODO:
-#   [~] Configure build order: https://cloud.google.com/cloud-build/docs/configuring-builds/configure-build-step-order
 #   [ ] Only run yarn steps if Node.js changes
 #   [ ] Coverage check
 steps:
-# Debug
+# Fetch entire repo
 - name: gcr.io/cloud-builders/git
   args: ['fetch', '--unshallow']
   id: 'Unshallow git'
-- name: 'gcr.io/cloud-builders/git'
-  args: ['log', 'HEAD']
-- name: 'gcr.io/cloud-builders/git'
-  args: ['tag', '--sort=-creatordate']
 # Git Presubmit Linter
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
@@ -26,11 +21,10 @@ steps:
   args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/line-length.sh 80']
   id: 'Check git message line length'
   waitFor: ['Download Git Presubmit Linter']
-# Cannot get `git diff HEAD^`, so it never does what I want
-#- name: 'gcr.io/cloud-builders/git'
-#  entrypoint: 'bash'
-#  args: ['-c', 'git diff HEAD^ --pretty=%B | ./git-presubmit-linter/rules/trailing-whitespace.sh']
-#  id: 'Check commit no trailing whitespace'
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args: ['-c', 'git diff HEAD^ --pretty=%B | ./git-presubmit-linter/rules/trailing-whitespace.sh']
+  id: 'Check commit no trailing whitespace'
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args: ['-c', './git-presubmit-linter/tools/changelog.sh > changelog.txt']
@@ -67,7 +61,7 @@ steps:
   waitFor: ['Install dependencies']
 # Upload docs while keeping the same hierarchy
 - name: 'gcr.io/cloud-builders/gsutil'
-  args: ['-m', 'cp', '-r', 'docs/**/*', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/docs']
+  args: ['-m', 'cp', '-r', 'docs/**/*', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/docs/.']
   id: 'Store docs'
   waitFor: ['Docgen']
 - name: 'node:8.15.1'
