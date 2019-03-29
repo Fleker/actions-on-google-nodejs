@@ -1,1 +1,45 @@
 steps:
+# Git Presubmit Linter
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
+  id: 'Download Git Presubmit Linter'
+- name: 'ubuntu'
+  args: ['set', '-e']
+- name: 'ubuntu'
+  args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/verb-tense.sh']
+  id: 'Check git message verb tense'
+- name: 'ubuntu'
+  args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/line-length.sh', '80']
+  id: 'Check git message line length'
+- name: 'ubuntu'
+  args: ['git', 'diff', 'HEAD~1', '--pretty=%B', '|', './git-presubmit-linter/rules/trailing-whitespace.sh']
+  id: 'Check commit no trailing whitespace'
+- name: 'ubuntu'
+  args: ['./git-presubmit-linter/tools/changelog.sh', '>', 'changelog.txt']
+  id: 'Generate changelog'
+# Yarn
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['']
+  id: 'Install dependencies'
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['lint']
+  id: 'Lint'
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['build']
+  id: 'Build'
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['test:ci']
+  id: 'Test'
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['docs']
+  id: 'Docgen'
+- name: 'gcr.io/cloud-builders/yarn'
+  args: ['package']
+  id: 'Generate archive'
+- name: 'ubuntu'
+  args: ['tar', '-tf', '*.tar.gz', '|', './git-presubmit-linter/tools/filelist.sh', './script/package.txt']
+  id: 'Verify archive contents'
+artifacts:
+  objects:
+    location: 'gs://fleker-actions-on-google-lib/'
+    paths: ['changelog.txt', 'docs/']
