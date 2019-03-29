@@ -45,7 +45,7 @@ steps:
   args: ['package']
   id: 'Generate archive'
 - name: 'ubuntu'
-  args: ['tar', '-tf', '*.tar.gz', '|', './git-presubmit-linter/tools/filelist.sh', './script/package.txt']
+  args: ['tar', '-tf', '*.tgz', '|', './git-presubmit-linter/tools/filelist.sh', './script/package.txt']
   id: 'Verify archive contents'
 artifacts:
   objects:
