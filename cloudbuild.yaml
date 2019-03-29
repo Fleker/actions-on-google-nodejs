@@ -61,7 +61,7 @@ steps:
   waitFor: ['Install dependencies']
 # Upload docs while keeping the same hierarchy
 - name: 'gcr.io/cloud-builders/gsutil'
-  args: ['-m', 'cp', '-r', 'docs/', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/docs/']
+  args: ['-m', 'cp', '-r', 'docs/', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/']
   id: 'Store docs'
   waitFor: ['Docgen']
 - name: 'node:8.15.1'
