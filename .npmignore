@@ -13,3 +13,6 @@ script
 package
 .nycrc.json
 typedoc.json
+changelog.txt
+cloudbuild.yaml
+git-presubmit-linter/
