@@ -5,6 +5,9 @@
 #   [ ] Coverage check
 steps:
 # Debug
+- name: gcr.io/cloud-builders/git
+  args: ['fetch', '--unshallow']
+  id: 'Unshallow git'
 - name: 'gcr.io/cloud-builders/git'
   args: ['log', 'HEAD']
 - name: 'gcr.io/cloud-builders/git'
@@ -62,6 +65,11 @@ steps:
   args: ['docs']
   id: 'Docgen'
   waitFor: ['Install dependencies']
+# Upload docs while keeping the same hierarchy
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['-m', 'cp', '-r', 'docs/**/*', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/docs']
+  id: 'Store docs'
+  waitFor: ['Docgen']
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['pack']
@@ -75,4 +83,4 @@ steps:
 artifacts:
   objects:
     location: 'gs://fleker-actions-on-googl-lib/$SHORT_SHA'
-    paths: ['changelog.txt', 'docs/**/*', '*.tgz']
+    paths: ['changelog.txt', 'actions-on-google*.tgz']
