@@ -13,6 +13,7 @@ script
 package
 .nycrc.json
 typedoc.json
-changelog.txt
+/changelog.txt
+changelog.*
 cloudbuild.yaml
 git-presubmit-linter/
