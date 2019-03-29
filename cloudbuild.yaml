@@ -36,7 +36,7 @@ steps:
   args: ['build']
   id: 'Build'
 - name: 'gcr.io/cloud-builders/yarn'
-  args: ['test:ci']
+  args: ['test']
   id: 'Test'
 - name: 'gcr.io/cloud-builders/yarn'
   args: ['docs']
