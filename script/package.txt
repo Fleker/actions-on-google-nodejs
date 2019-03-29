@@ -10,3 +10,4 @@ package/src/[a-z/]*
 package/LICENSE
 package/README.md
 package/package.json
+package/changelog.txt
