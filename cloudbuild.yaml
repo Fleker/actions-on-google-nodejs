@@ -67,7 +67,7 @@ steps:
   entrypoint: 'yarn'
   args: ['docs']
   id: 'Docgen'
-  waitFor: ['Install dependencies']
+  waitFor: ['Install dependencies', 'Coverage']
 # Upload docs while keeping the same hierarchy
 - name: 'gcr.io/cloud-builders/gsutil'
   args: ['-m', 'cp', '-r', 'docs/', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/']
@@ -78,7 +78,7 @@ steps:
   entrypoint: 'yarn'
   args: ['pack']
   id: 'Generate archive'
-  waitFor: ['Build']
+  waitFor: ['Build', 'Coverage'] # Coverage script will clear out the archive, so we wait til it's done
 - name: 'ubuntu'
   entrypoint: 'bash'
   args: ['-c', 'tar -tf *.tgz | ./git-presubmit-linter/tools/filelist.sh ./script/package.txt']
