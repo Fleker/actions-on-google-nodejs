@@ -11,7 +11,7 @@ steps:
   id: 'Download Git Presubmit Linter'
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
-  args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh present']
+  args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh imperative']
   id: 'Check git message verb tense'
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
