@@ -11,6 +11,7 @@ steps:
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
   id: 'Download Git Presubmit Linter'
+  waitFor: ['Unshallow git']
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh imperative']
@@ -25,6 +26,7 @@ steps:
   entrypoint: 'bash'
   args: ['-c', 'git diff HEAD^ --pretty=%B | ./git-presubmit-linter/rules/trailing-whitespace.sh']
   id: 'Check commit no trailing whitespace'
+  waitFor: ['Download Git Presubmit Linter']
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args: ['-c', './git-presubmit-linter/tools/changelog.sh > changelog.txt']
@@ -35,10 +37,12 @@ steps:
   entrypoint: 'yarn'
   args: ['']
   id: 'Install dependencies'
+  waitFor: ['-']
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['audit']
   id: 'Audit'
+  waitFor: ['Install dependencies']
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['lint']
@@ -55,6 +59,11 @@ steps:
   id: 'Test'
   waitFor: ['Build']
 - name: 'node:8.15.1'
+  entrypoint: 'bash'
+  args: ['./script/coverage.sh']
+  id: 'Coverage'
+  waitFor: ['Test']
+- name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['docs']
   id: 'Docgen'
@@ -64,6 +73,7 @@ steps:
   args: ['-m', 'cp', '-r', 'docs/', 'gs://fleker-actions-on-googl-lib/$SHORT_SHA/']
   id: 'Store docs'
   waitFor: ['Docgen']
+# Package library
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['pack']
