@@ -43,8 +43,8 @@ steps:
   args: ['build']
   id: 'Build'
 - name: 'node:8.15.1'
-  entrypoint: 'yarn'
-  args: ['test']
+  entrypoint: 'bash'
+  args: ['-c', 'nyc ava --fail-fast']
   id: 'Test'
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
