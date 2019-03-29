@@ -4,7 +4,7 @@ steps:
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
   id: 'Download Git Presubmit Linter'
 - name: 'ubuntu'
-  args: ['sudo', 'apt-get', 'install', '-y', 'git']
+  args: ['apt-get', 'install', '-y', 'git']
   id: 'Download Git to Ubuntu image'
 - name: 'ubuntu'
   args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/verb-tense.sh']
