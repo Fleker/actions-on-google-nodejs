@@ -3,14 +3,17 @@ steps:
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
   id: 'Download Git Presubmit Linter'
-- name: 'gcr.io/cloud-builders/git'
-  args: ['log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/verb-tense.sh']
+- name: 'ubuntu'
+  args: ['sudo', 'apt-get', 'install', '-y', 'git']
+  id: 'Download Git to Ubuntu image'
+- name: 'ubuntu'
+  args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/verb-tense.sh']
   id: 'Check git message verb tense'
-- name: 'gcr.io/cloud-builders/git'
-  args: ['log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/line-length.sh', '80']
+- name: 'ubuntu'
+  args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/line-length.sh', '80']
   id: 'Check git message line length'
-- name: 'gcr.io/cloud-builders/git'
-  args: ['diff', 'HEAD~1', '--pretty=%B', '|', './git-presubmit-linter/rules/trailing-whitespace.sh']
+- name: 'ubuntu'
+  args: ['git', 'diff', 'HEAD~1', '--pretty=%B', '|', './git-presubmit-linter/rules/trailing-whitespace.sh']
   id: 'Check commit no trailing whitespace'
 - name: 'ubuntu'
   args: ['./git-presubmit-linter/tools/changelog.sh', '>', 'changelog.txt']
