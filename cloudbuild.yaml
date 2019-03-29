@@ -1,22 +1,16 @@
+# A bunch of build steps
+# TODO:
+#   [ ] Configure build order: https://cloud.google.com/cloud-build/docs/configuring-builds/configure-build-step-order
+#   [ ] Only run yarn steps if Node.js changes
+#   [ ] Add URL checkers
+#   [ ] Coverage check
 steps:
 # Git Presubmit Linter
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
   id: 'Download Git Presubmit Linter'
-- name: 'ubuntu'
-  args: ['apt-get', 'install', '-y', 'software-properties-common']
-  id: 'AAA'
-- name: 'ubuntu'
-  args: ['add-apt-repository', 'ppa:git-core/ppa']
-  id: 'Add Git PPA'
-- name: 'ubuntu'
-  args: ['apt-get', 'update']
-  id: 'Update apt'
-- name: 'ubuntu'
-  id: 'Install Git'
-  args: ['apt-get', 'install', '-y', 'git-core']
-  id: 'Download Git to Ubuntu image'
-- name: 'ubuntu'
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
   args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/verb-tense.sh']
   id: 'Check git message verb tense'
 - name: 'ubuntu'
