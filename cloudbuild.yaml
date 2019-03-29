@@ -75,4 +75,4 @@ steps:
 artifacts:
   objects:
     location: 'gs://fleker-actions-on-googl-lib/$SHORT_SHA'
-    paths: ['changelog.txt', 'docs/**/*', *.tgz]
+    paths: ['changelog.txt', 'docs/**/*', '*.tgz']
