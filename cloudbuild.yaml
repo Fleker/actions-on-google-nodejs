@@ -1,9 +1,14 @@
 # A bunch of build steps
 # TODO:
-#   [ ] Configure build order: https://cloud.google.com/cloud-build/docs/configuring-builds/configure-build-step-order
+#   [~] Configure build order: https://cloud.google.com/cloud-build/docs/configuring-builds/configure-build-step-order
 #   [ ] Only run yarn steps if Node.js changes
 #   [ ] Coverage check
 steps:
+# Debug
+- name: 'gcr.io/cloud-builders/git'
+  args: ['log', 'HEAD']
+- name: 'gcr.io/cloud-builders/git'
+  args: ['tag', '--sort=-creatordate']
 # Git Presubmit Linter
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
@@ -12,10 +17,12 @@ steps:
   entrypoint: 'bash'
   args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh imperative']
   id: 'Check git message verb tense'
+  waitFor: ['Download Git Presubmit Linter']
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/line-length.sh 80']
   id: 'Check git message line length'
+  waitFor: ['Download Git Presubmit Linter']
 # Cannot get `git diff HEAD^`, so it never does what I want
 #- name: 'gcr.io/cloud-builders/git'
 #  entrypoint: 'bash'
@@ -25,6 +32,7 @@ steps:
   entrypoint: 'bash'
   args: ['-c', './git-presubmit-linter/tools/changelog.sh > changelog.txt']
   id: 'Generate changelog'
+  waitFor: ['Download Git Presubmit Linter']
 # Yarn
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
@@ -38,27 +46,33 @@ steps:
   entrypoint: 'yarn'
   args: ['lint']
   id: 'Lint'
+  waitFor: ['Install dependencies']
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['build']
   id: 'Build'
+  waitFor: ['Install dependencies']
 - name: 'node:8.15.1'
   entrypoint: 'bash'
   args: ['-c', './node_modules/.bin/nyc ./node_modules/.bin/ava --fail-fast']
   id: 'Test'
+  waitFor: ['Build']
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['docs']
   id: 'Docgen'
+  waitFor: ['Install dependencies']
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
   args: ['pack']
   id: 'Generate archive'
+  waitFor: ['Build']
 - name: 'ubuntu'
   entrypoint: 'bash'
   args: ['-c', 'tar -tf *.tgz | ./git-presubmit-linter/tools/filelist.sh ./script/package.txt']
   id: 'Verify archive contents'
+  waitFor: ['Generate archive']
 artifacts:
   objects:
     location: 'gs://fleker-actions-on-googl-lib/$SHORT_SHA'
-    paths: ['changelog.txt', 'docs/**']
+    paths: ['changelog.txt', 'docs/**/*', *.tgz]
