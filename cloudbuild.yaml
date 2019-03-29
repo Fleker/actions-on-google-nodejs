@@ -49,5 +49,5 @@ steps:
   id: 'Verify archive contents'
 artifacts:
   objects:
-    location: 'gs://fleker-actions-on-google-lib/'
+    location: 'gs://fleker-actions-on-googl-lib/$SHORT_SHA'
     paths: ['changelog.txt', 'docs/']
