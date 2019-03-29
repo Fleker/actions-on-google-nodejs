@@ -10,8 +10,8 @@ steps:
   args: ['clone', 'https://github.com/google/git-presubmit-linter.git']
   id: 'Download Git Presubmit Linter'
 - name: 'gcr.io/cloud-builders/git'
-  entrypoint: 'sh'
-  args: ['`git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/verb-tense.sh`']
+  entrypoint: 'bash'
+  args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/verb-tense.sh']
   id: 'Check git message verb tense'
 - name: 'ubuntu'
   args: ['git', 'log', '-1', '--pretty=%B', '|', './git-presubmit-linter/rules/line-length.sh', '80']
