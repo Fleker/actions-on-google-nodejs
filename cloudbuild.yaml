@@ -2,7 +2,6 @@
 # TODO:
 #   [ ] Configure build order: https://cloud.google.com/cloud-build/docs/configuring-builds/configure-build-step-order
 #   [ ] Only run yarn steps if Node.js changes
-#   [ ] Add URL checkers
 #   [ ] Coverage check
 steps:
 # Git Presubmit Linter
@@ -17,10 +16,11 @@ steps:
   entrypoint: 'bash'
   args: ['-c', 'git log -1 --pretty=%B | ./git-presubmit-linter/rules/line-length.sh 80']
   id: 'Check git message line length'
-- name: 'gcr.io/cloud-builders/git'
-  entrypoint: 'bash'
-  args: ['-c', 'git diff HEAD^ --pretty=%B | ./git-presubmit-linter/rules/trailing-whitespace.sh']
-  id: 'Check commit no trailing whitespace'
+# Cannot get `git diff HEAD^`, so it never does what I want
+#- name: 'gcr.io/cloud-builders/git'
+#  entrypoint: 'bash'
+#  args: ['-c', 'git diff HEAD^ --pretty=%B | ./git-presubmit-linter/rules/trailing-whitespace.sh']
+#  id: 'Check commit no trailing whitespace'
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args: ['-c', './git-presubmit-linter/tools/changelog.sh > changelog.txt']
@@ -43,8 +43,8 @@ steps:
   args: ['build']
   id: 'Build'
 - name: 'node:8.15.1'
-  entrypoint: 'yarn'
-  args: ['test']
+  entrypoint: 'bash'
+  args: ['-c', './node_modules/.bin/nyc ./node_modules/.bin/ava --fail-fast']
   id: 'Test'
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
@@ -52,7 +52,7 @@ steps:
   id: 'Docgen'
 - name: 'node:8.15.1'
   entrypoint: 'yarn'
-  args: ['package']
+  args: ['pack']
   id: 'Generate archive'
 - name: 'ubuntu'
   entrypoint: 'bash'
@@ -61,4 +61,4 @@ steps:
 artifacts:
   objects:
     location: 'gs://fleker-actions-on-googl-lib/$SHORT_SHA'
-    paths: ['changelog.txt', 'docs/']
+    paths: ['changelog.txt', 'docs/**']
