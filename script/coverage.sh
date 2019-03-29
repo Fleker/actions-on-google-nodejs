@@ -27,7 +27,7 @@ git checkout "$curr_hash"
 yarn test > /dev/null
 # File is stored in coverage/coverage-summary.json
 coverage_pct_threshold="console.log(require('./coverage/coverage-summary.json').total.functions.pct + 3)"
-curr_coverage=$(node -e $coverage_pct_threshold)
+curr_coverage=$(node -e "$coverage_pct_threshold")
 
 if [ $prev_coverage -lt $curr_coverage ]; then
   # This change reduces function code coverage.
